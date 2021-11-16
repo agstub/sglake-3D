@@ -40,7 +40,7 @@ The model is organized in 7 python files in the *source* directory as follows.
 5. **boundary_conds.py** contains functions that mark the mesh boundary and apply boundary conditions.
 
 6. **hydrology.py** contains the subglacial lake volume change
-timeseries and the sea level change timeseries.
+timeseries.
 
 7. **main.py** runs the model. It contains the time-stepping loop that
 calls the Stokes solver and mesh-related functions at each timestep, and saves the output.
