@@ -35,8 +35,7 @@ The model is organized in 7 python files in the *source* directory as follows.
 
 3. **stokes.py** contains the Stokes system solver and related functions.
 
-4. **mesh_fcns.py** contains functions that solve the surface kinematic equations, move the mesh,
-    and return the grounding line positions.
+4. **mesh_fcns.py** contains functions that solve the surface kinematic equations and move the mesh.
 
 5. **boundary_conds.py** contains functions that mark the mesh boundary and apply boundary conditions.
 
