@@ -11,9 +11,10 @@ def plot_fields(h_i,s_i,wb_i,xh,yh,xs,ys,i):
     if os.path.isdir('results/pngs')==False:
         os.mkdir('results/pngs')    # make a directory for the results.
 
-    levels = np.linspace(-1,1,9)
-    levels0 = np.linspace(0,4,9)
+    levels = np.linspace(-1,1,9)            # contour levels for elevation
+    levels0 = np.linspace(0,4,9)            # contour levels for water thickness
     levels0[0] = tol
+    levels1 = np.linspace(-2,2,9)           # contour levels for basal vertical vel.
 
     h_int = LinearNDInterpolator(list(zip(xh, yh)),h_i)
     s_int = LinearNDInterpolator(list(zip(xs, ys)),s_i)
@@ -24,8 +25,6 @@ def plot_fields(h_i,s_i,wb_i,xh,yh,xs,ys,i):
     print('max water thick. = '+str(np.max(np.abs(s_int(X0,Y0)-bed(X0,Y0))))+' m')
     print('max basal vertical vel. = '+str(np.max(np.abs(wb_int(X0,Y0))))+" m/yr")
     print('\n')
-
-    levels1 = np.linspace(-5,5,9)
 
     cmap1 = copy.copy(mpl.cm.get_cmap("Blues"))
     cmap1.set_under('burlywood')
