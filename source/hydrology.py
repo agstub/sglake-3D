@@ -37,7 +37,7 @@ def Vdot(lake_vol_0,t):
     return Vd
 
 
-# #sanity check plotting
+#sanity check plotting
 # import matplotlib.pyplot as plt
 # t = np.linspace(0,t_final,nt)
 # plt.plot(Vol(t,1))

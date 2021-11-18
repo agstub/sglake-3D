@@ -59,7 +59,7 @@ DZ = Hght/Nz
 
 # time-stepping parameters
 t_period = 5*3.154e7                     # oscillation period (sec)
-t_final = 2*t_period                     # final time
+t_final = 1.0*t_period                     # final time
 nt_per_cycle = 2000                      # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle)  # number of time steps
 dt = t_final/nt                          # timestep size
