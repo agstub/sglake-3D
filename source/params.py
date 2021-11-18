@@ -10,13 +10,13 @@ parser.add_argument('-H', type=float, default=1000.0, metavar='thickness',
                     help='Ice thickness (m)')
 parser.add_argument('-L', type=float, default=80.0, metavar='domain length',
                     help='Length of domain (km) in x and y directions')
-parser.add_argument('-pd', type=float, default=10, metavar='period',
+parser.add_argument('-pd', type=float, default=5, metavar='period',
                     help='Filling/draining oscillation period (yr)')
 parser.add_argument('-plotting', type=str, default='off', metavar='on/off',
                     help='Turn real-time plotting \'on\' or \'off\' ')
 parser.add_argument('-print_info', type=str, default='on', metavar='on/off',
                     help='Turn \'on\' to print Newton convergence info ')
-parser.add_argument('-save_vtk', type=str, default='on', metavar='on/off',
+parser.add_argument('-save_vtk', type=str, default='off', metavar='on/off',
                     help='Turn \'on\' to save Stokes vtk files ')
 args, unknown = parser.parse_known_args()
 
@@ -72,8 +72,8 @@ tol = 1.0e-1                       # numerical tolerance for boundary geometry:
 Hght = args.H                      # (initial) height of the domain (m)
 Lngth = args.L*1000.0              # length of the domain (m)
 
-Ny = int(Lngth/2500.0)               # number of elements in vertical direction
-Nx = int(Lngth/2500.0)              # number of elements in horizontal direction
+Ny = int(Lngth/10000.0)               # number of elements in vertical direction
+Nx = int(Lngth/10000.0)              # number of elements in horizontal direction
 Nz = int(Hght/500.0)
 
 DX = Lngth/Nx
@@ -82,8 +82,8 @@ DZ = Hght/Nz
 
 # time-stepping parameters
 t_period = args.pd*3.154e7         # oscillation period (secs; yr*sec_per_year)
-t_final = 1*t_period            # final time
-nt_per_cycle = 500                 # number of timesteps per oscillation
+t_final = 2*t_period            # final time
+nt_per_cycle = 2000                 # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps
 dt = t_final/nt                    # timestep size
 t_arr = np.linspace(0,t_final,nt)
