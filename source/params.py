@@ -76,8 +76,8 @@ tol = 1.0e-1                       # numerical tolerance for boundary geometry:
 Hght = args.H                      # (initial) height of the domain (m)
 Lngth = args.L*1000.0              # length of the domain (m)
 
-Ny = int(Lngth/10000.0)               # number of elements in vertical direction
-Nx = int(Lngth/10000.0)              # number of elements in horizontal direction
+Ny = int(Lngth/2500.0)               # number of elements in vertical direction
+Nx = int(Lngth/2500.0)              # number of elements in horizontal direction
 Nz = int(Hght/500.0)
 
 DX = Lngth/Nx
