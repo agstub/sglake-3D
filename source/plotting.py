@@ -19,10 +19,13 @@ def plot_fields(h_i,s_i,wb_i,xh,yh,xs,ys,i):
     s_int = LinearNDInterpolator(list(zip(xs, ys)),s_i)
     wb_int = LinearNDInterpolator(list(zip(xs, ys)),wb_i)
 
+    print('-----------------------------------------------------------')
+    print('time step '+str(i)+' out of '+str(nt))
     print(r'solution properties at t='+"{:.2f}".format(t_arr[i]/3.154e7)+' yr:')
-    print('max dh = '+str(np.max(np.abs(h_int(X0,Y0)-Hght))))
-    print('max ds = '+str(np.max(np.abs(s_int(X0,Y0)-bed(X0,Y0)))))
-    print('max wb = '+str(np.max(np.abs(wb_int(X0,Y0)))))
+    print('max elevation anom. = '+str(np.max(np.abs(h_int(X0,Y0)-Hght)))+' m')
+    print('max water thick. = '+str(np.max(np.abs(s_int(X0,Y0)-bed(X0,Y0))))+' m')
+    print('max basal vertical vel. = '+str(np.max(np.abs(wb_int(X0,Y0))))" m/yr")
+    print('-----------------------------------------------------------')
     print('\n')
 
     levels1 = np.linspace(-5,5,9)

@@ -61,3 +61,4 @@ for i in range(nt):
 
 
         plot_fields(h,s,wb,xh,yh,xs,ys,i)
+        sys.stdout.flush()
