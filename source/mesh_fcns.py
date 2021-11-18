@@ -3,7 +3,7 @@
 #  surface kinematic equations
 #------------------------------------------------------------------------------
 
-from params import dt,DZ
+from params import dt,DZ,Hght
 from dolfin import *
 import numpy as np
 from geometry import bed
@@ -60,3 +60,23 @@ def move_mesh(w,mesh):
     M[:,2][M[:,2]<bed(M[:,0],M[:,1])] = bed(M[:,0],M[:,1])[M[:,2]<bed(M[:,0],M[:,1])]
 
     return mesh
+
+#-------------------------------------------------------------------------------
+# get upper surface elevation, lower surface elevation, basal vertical velocity,
+# and mesh coordinates
+def get_fields(w,mesh):
+
+    w_vv = w.sub(0).sub(2).compute_vertex_values(mesh)
+
+    M = mesh.coordinates()
+
+    xh = M[:,0][np.abs(M[:,2]-Hght)<0.25*DZ]
+    yh = M[:,1][np.abs(M[:,2]-Hght)<0.25*DZ]
+    xs = M[:,0][np.abs(M[:,2])<0.25*DZ]
+    ys = M[:,1][np.abs(M[:,2])<0.25*DZ]
+
+    h = M[:,2][np.abs(M[:,2]-Hght)<0.25*DZ]
+    s = M[:,2][np.abs(M[:,2])<0.25*DZ]
+    wb = w_vv[np.abs(M[:,2])<0.25*DZ]*3.154e7   # save in meters per year
+
+    return [h,s,wb,xh,yh,xs,ys]

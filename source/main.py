@@ -12,7 +12,8 @@ from stokes import stokes_solve
 from geometry import bed
 from mesh_fcns import move_mesh
 from boundary_conds import mark_boundary
-from params import tol,Lngth,Hght,nt,dt,Nx,Ny,Nz,save_vtk
+from params import tol,Lngth,Hght,nt,dt,Nx,Ny,Nz,save_vtk,plot_now
+from realtime_process import realtime_plot
 from mpi4py import MPI
 #-------------------------------------------------------------------------------
 
@@ -65,6 +66,11 @@ for i in range(nt):
     hdf5.write(mesh, "mesh")
     hdf5.write(w, "solution")
     hdf5.close()
+
+
+    # plot in real time if desired
+    if plot_now == 'on':
+        realtime_plot(w,mesh,i)
 
     # move the mesh according by solving the surface kinematic equations
     # and displacemnt the interior mesh vertices smoothly
