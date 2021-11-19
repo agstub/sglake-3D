@@ -9,10 +9,10 @@ import os
 import sys
 from dolfin import *
 from stokes import stokes_solve
-from geometry import bed
+from geometry import bed,bed_2D
 from mesh_fcns import move_mesh
 from boundary_conds import mark_boundary
-from params import tol,Lngth,Hght,nt,dt,Nx,Ny,Nz,save_vtk,plot_now
+from params import tol,Lngth,Hght,nt,dt,Nx,Ny,Nz,save_vtk,plot_now,dim
 from realtime_process import realtime_plot
 from mpi4py import MPI
 #-------------------------------------------------------------------------------
@@ -36,15 +36,23 @@ if save_vtk == 'on':
 
 #-------------------------------------------------------------------------------
 # 2. create mesh
-p0 = Point((0.0,0.0,0.0))
-p1 = Point((Lngth,Lngth,Hght))
-mesh = BoxMesh(p0,p1, Nx, Ny,Nz)
+if dim != '2D':
+    p0 = Point((0.0,0.0,0.0))
+    p1 = Point((Lngth,Lngth,Hght))
+    mesh = BoxMesh(p0,p1, Nx, Ny,Nz)
+    # get mesh coordinates
+    M = mesh.coordinates()
+    # make sure all vertices are bounded below by the bed elevation
+    M[:,2][M[:,2]<bed(M[:,0],M[:,1])] = bed(M[:,0],M[:,1])[M[:,2]<bed(M[:,0],M[:,1])]
+else:
+    p0 = Point((0.0,0.0))
+    p1 = Point((Lngth,Hght))
+    mesh = RectangleMesh(p0,p1, Nx, Nz)
+    M = mesh.coordinates()
+    # make sure all vertices are bounded below by the bed elevation
+    M[:,1][M[:,1]<bed_2D(M[:,0])] = bed_2D(M[:,0])[M[:,1]<bed_2D(M[:,0])]
 
-# get mesh coordinates
-M = mesh.coordinates()
 
-# make sure all vertices are bounded below by the bed elevation
-M[:,2][M[:,2]<bed(M[:,0],M[:,1])] = bed(M[:,0],M[:,1])[M[:,2]<bed(M[:,0],M[:,1])]
 
 #-------------------------------------------------------------------------------
 # 3. solve the problem

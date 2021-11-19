@@ -1,11 +1,11 @@
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # This file contains functions that:
 # (1) define the boundaries (ice-air,ice-water,ice-bed) of the mesh, AND...
 # (2) mark the boundaries of the mesh
 # (3) apply Dirichlet boundary conditions on the side-walls of the domain
 #-------------------------------------------------------------------------------
-from params import tol,Lngth,Hght
-from geometry import bed
+from params import tol,Lngth,Hght,dim
+from geometry import bed,bed_2D
 import numpy as np
 from dolfin import *
 
@@ -18,12 +18,18 @@ class WaterBoundary(SubDomain):
     # This boundary is marked first and all of the irrelevant portions are
     # overwritten by the other boundary markers.
     def inside(self, x, on_boundary):
-        return (on_boundary and (x[2]<0.5*Hght))
+        if dim != '2D':
+            return (on_boundary and (x[2]<0.5*Hght))
+        else:
+            return (on_boundary and (x[1]<0.5*Hght))
 
 class BedBoundary(SubDomain):
     # Ice-bed boundary
     def inside(self, x, on_boundary):
-        return (on_boundary and ((x[2]-bed(x[0],x[1]))<=tol))
+        if dim != '2D':
+            return (on_boundary and ((x[2]-bed(x[0],x[1]))<=tol))
+        else:
+            return (on_boundary and (x[1]-bed_2D(x[0])<=tol))
 
 class WestBoundary(SubDomain):
     # West boundary (x=0)
@@ -66,7 +72,11 @@ def mark_boundary(mesh):
     # *These markers can be saved as pvd file if "save_vtk" is turned on in params.py
     #
 
-    boundary_markers = MeshFunction('size_t', mesh,dim=2)
+    if dim != '2D':
+        boundary_markers = MeshFunction('size_t', mesh,dim=2)
+    else:
+        boundary_markers = MeshFunction('size_t', mesh,dim=1)
+
     boundary_markers.set_all(0)
 
     # Mark ice-water boundary
@@ -85,13 +95,15 @@ def mark_boundary(mesh):
     bdryEast = EastBoundary()
     bdryEast.mark(boundary_markers, 2)
 
-    # North boundary
-    bdryNorth = NorthBoundary()
-    bdryNorth.mark(boundary_markers, 5)
 
-    # South boundary
-    bdrySouth = SouthBoundary()
-    bdrySouth.mark(boundary_markers, 6)
+    if dim != '2D':
+        # North boundary
+        bdryNorth = NorthBoundary()
+        bdryNorth.mark(boundary_markers, 5)
+
+        # South boundary
+        bdrySouth = SouthBoundary()
+        bdrySouth.mark(boundary_markers, 6)
 
     return boundary_markers
 
@@ -102,11 +114,15 @@ def apply_bcs(W,boundary_markers):
     # here we assume zero vertical velocity, which is consistent with the
     # cryostatic normal stress condition
 
-    bc1 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,1)
-    bc2 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,2)
-    bc3 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,5)
-    bc4 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,6)
-
-    bcs = [bc1,bc2,bc3,bc4]
+    if dim != '2D':
+        bc1 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,1)
+        bc2 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,2)
+        bc3 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,5)
+        bc4 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,6)
+        bcs = [bc1,bc2,bc3,bc4]
+    else:
+        bc1 = DirichletBC(W.sub(0).sub(1), Constant(0), boundary_markers,1)
+        bc2 = DirichletBC(W.sub(0).sub(1), Constant(0), boundary_markers,2)
+        bcs = [bc1,bc2]
 
     return bcs

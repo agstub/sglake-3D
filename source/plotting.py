@@ -1,66 +1,113 @@
-from params import Lngth,tol,Hght,nt,X0,Y0,t_arr
+from params import Lngth,tol,Hght,nt,X0,Y0,t_arr,dim,X_fine
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from scipy.interpolate import LinearNDInterpolator
+from scipy.interpolate import LinearNDInterpolator, interp1d
 import os
 import numpy as np
 import copy
-from geometry import bed
+from geometry import bed,bed_2D
 
 def plot_fields(h_i,s_i,wb_i,xh,yh,xs,ys,i):
+    if dim == '2D':
+        plot_2D(h_i,s_i,wb_i,xh,xs,i)
+    else:
+        if os.path.isdir('results/pngs')==False:
+            os.mkdir('results/pngs')    # make a directory for the results.
+
+        levels = np.linspace(-1,1,9)            # contour levels for elevation
+        levels0 = np.linspace(0,4,9)            # contour levels for water thickness
+        levels0[0] = tol
+        levels1 = np.linspace(-2,2,9)           # contour levels for basal vertical vel.
+
+        h_int = LinearNDInterpolator(list(zip(xh, yh)),h_i)
+        s_int = LinearNDInterpolator(list(zip(xs, ys)),s_i)
+        wb_int = LinearNDInterpolator(list(zip(xs, ys)),wb_i)
+
+        print(r'solution properties at t='+"{:.2f}".format(t_arr[i]/3.154e7)+' yr:')
+        print('max elevation anom. = '+str(np.max(np.abs(h_int(X0,Y0)-Hght)))+' m')
+        print('max water thick. = '+str(np.max(np.abs(s_int(X0,Y0)-bed(X0,Y0))))+' m')
+        print('max basal vertical vel. = '+str(np.max(np.abs(wb_int(X0,Y0))))+" m/yr")
+        print('\n')
+
+        cmap1 = copy.copy(mpl.cm.get_cmap("Blues"))
+        cmap1.set_under('burlywood')
+
+        plt.figure(figsize=(8,10))
+        plt.subplot(311)
+        plt.title(r'$t=$'+"{:.2f}".format(t_arr[i]/3.154e7)+' yr',loc='left',fontsize=22)
+        plt.contourf((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,h_int(X0,Y0)-Hght,levels=levels,vmin=levels[0],vmax=levels[-1],extend='both',cmap='coolwarm')
+        plt.yticks(fontsize=16)
+        plt.ylabel(r'$y$ (km)',fontsize=20)
+        plt.gca().xaxis.set_ticklabels([])
+        cbar = plt.colorbar(ticks=levels)
+        cbar.set_label(label=r'elevation anomaly (m)',size=18)
+        cbar.ax.tick_params(labelsize=16)
+
+        plt.subplot(312)
+        p1 = plt.contourf((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,s_int(X0,Y0)-bed(X0,Y0),levels=levels0,vmin=levels0[0],vmax=levels0[-1],extend='both',cmap=cmap1)
+        l1 = plt.contour((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,s_int(X0,Y0)-bed(X0,Y0),levels=[tol],colors='k',linewidths=3)
+        plt.yticks(fontsize=16)
+        plt.gca().xaxis.set_ticklabels([])
+        plt.ylabel(r'$y$ (km)',fontsize=20)
+        cbar = plt.colorbar(p1,ticks=levels0)
+        cbar.set_label(label=r'water thickness (m)',size=18)
+        cbar.add_lines(l1)
+        cbar.ax.tick_params(labelsize=16)
+
+        plt.subplot(313)
+        p1 = plt.contourf((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,wb_int(X0,Y0),levels=levels1,vmin=levels1[0],vmax=levels1[-1],extend='both',cmap='coolwarm')
+        plt.yticks(fontsize=16)
+        plt.xticks(fontsize=16)
+        plt.xlabel(r'$x$ (km)',fontsize=20)
+        plt.ylabel(r'$y$ (km)',fontsize=20)
+        cbar = plt.colorbar(p1,ticks=levels1)
+        cbar.set_label(label=r'$w_b$ (m/yr)',size=18)
+        cbar.ax.tick_params(labelsize=16)
+
+        plt.tight_layout()
+        plt.savefig('results/pngs/surfs_'+str(i))
+        plt.close()
+
+
+
+
+
+def plot_2D(h_i,s_i,wb_i,xh,xs,i):
     if os.path.isdir('results/pngs')==False:
         os.mkdir('results/pngs')    # make a directory for the results.
 
-    levels = np.linspace(-1,1,9)            # contour levels for elevation
-    levels0 = np.linspace(0,4,9)            # contour levels for water thickness
-    levels0[0] = tol
-    levels1 = np.linspace(-2,2,9)           # contour levels for basal vertical vel.
+    h_int = interp1d(xh,h_i,kind='linear',fill_value='extrapolate',bounds_error=False)
+    s_int = interp1d(xs,s_i,kind='linear',fill_value='extrapolate',bounds_error=False)
+    #wb_int = LinearNDInterpolator(list(zip(xs)),wb_i)
 
-    h_int = LinearNDInterpolator(list(zip(xh, yh)),h_i)
-    s_int = LinearNDInterpolator(list(zip(xs, ys)),s_i)
-    wb_int = LinearNDInterpolator(list(zip(xs, ys)),wb_i)
+    X = X_fine
+    Gamma_h = h_int(X)
+    Gamma_s = s_int(X)
 
-    print(r'solution properties at t='+"{:.2f}".format(t_arr[i]/3.154e7)+' yr:')
-    print('max elevation anom. = '+str(np.max(np.abs(h_int(X0,Y0)-Hght)))+' m')
-    print('max water thick. = '+str(np.max(np.abs(s_int(X0,Y0)-bed(X0,Y0))))+' m')
-    print('max basal vertical vel. = '+str(np.max(np.abs(wb_int(X0,Y0))))+" m/yr")
-    print('\n')
-
-    cmap1 = copy.copy(mpl.cm.get_cmap("Blues"))
-    cmap1.set_under('burlywood')
-
-    plt.figure(figsize=(8,10))
-    plt.subplot(311)
+    plt.figure(figsize=(8,6))
     plt.title(r'$t=$'+"{:.2f}".format(t_arr[i]/3.154e7)+' yr',loc='left',fontsize=22)
-    plt.contourf((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,h_int(X0,Y0)-Hght,levels=levels,vmin=levels[0],vmax=levels[-1],extend='both',cmap='coolwarm')
-    plt.yticks(fontsize=16)
-    plt.ylabel(r'$y$ (km)',fontsize=20)
-    plt.gca().xaxis.set_ticklabels([])
-    cbar = plt.colorbar(ticks=levels)
-    cbar.set_label(label=r'elevation anomaly (m)',size=18)
-    cbar.ax.tick_params(labelsize=16)
 
-    plt.subplot(312)
-    p1 = plt.contourf((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,s_int(X0,Y0)-bed(X0,Y0),levels=levels0,vmin=levels0[0],vmax=levels0[-1],extend='both',cmap=cmap1)
-    l1 = plt.contour((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,s_int(X0,Y0)-bed(X0,Y0),levels=[tol],colors='k',linewidths=3)
-    plt.yticks(fontsize=16)
-    plt.gca().xaxis.set_ticklabels([])
-    plt.ylabel(r'$y$ (km)',fontsize=20)
-    cbar = plt.colorbar(p1,ticks=levels0)
-    cbar.set_label(label=r'water thickness (m)',size=18)
-    cbar.add_lines(l1)
-    cbar.ax.tick_params(labelsize=16)
+    # Plot upper surface
+    plt.plot(X/1000-0.5*Lngth/1000,Gamma_h[:]-0.98*Hght,color='royalblue',linewidth=1)
 
-    plt.subplot(313)
-    p1 = plt.contourf((X0-Lngth/2)/1e3,(Y0-Lngth/2)/1e3,wb_int(X0,Y0),levels=levels1,vmin=levels1[0],vmax=levels1[-1],extend='both',cmap='coolwarm')
-    plt.yticks(fontsize=16)
-    plt.xticks(fontsize=16)
+    # Plot ice, water, and bed domains; colored accordingly.
+    p1 = plt.fill_between(X/1000-0.5*Lngth/1000,y1=Gamma_s[:], y2=Gamma_h[:]-0.98*Hght,facecolor='aliceblue',alpha=1.0)
+    p2 = plt.fill_between(X/1000-0.5*Lngth/1000,bed_2D(X),Gamma_s[:],facecolor='slateblue',alpha=0.5)
+    p3 = plt.fill_between(X/1000-0.5*Lngth/1000,-18*np.ones(np.size(X)),bed_2D(X),facecolor='burlywood',alpha=1.0)
+
+    # Plot bed surface
+    plt.plot(X/1000-0.5*Lngth/1000,bed_2D(X),color='k',linewidth=1)
+
+    # Plot ice-water surface
+    plt.plot(X[(Gamma_s[:]-bed_2D(X)>tol)]/1000-0.5*Lngth/1000,Gamma_s[:][(Gamma_s[:]-bed_2D(X)>tol)],'o',color='crimson',markersize=1)
+
+    # Label axes and save png:
     plt.xlabel(r'$x$ (km)',fontsize=20)
-    plt.ylabel(r'$y$ (km)',fontsize=20)
-    cbar = plt.colorbar(p1,ticks=levels1)
-    cbar.set_label(label=r'$w_b$ (m/yr)',size=18)
-    cbar.ax.tick_params(labelsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
 
+    plt.ylim(np.min(bed_2D(X))-2.0,25.0,8)
+    plt.xlim(-0.5*Lngth/1000,0.5*Lngth/1000)
     plt.tight_layout()
     plt.savefig('results/pngs/surfs_'+str(i))
     plt.close()

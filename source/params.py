@@ -11,6 +11,8 @@ save_vtk = 'off'
 # real-time plotting
 plot_now = 'on'
 
+dim = '2D'
+
 #-------------------------------------------------------------------------------
 #-----------------------------MODEL PARAMETERS----------------------------------
 # physical units:
@@ -34,7 +36,7 @@ C = 5.0e9                          # sliding law friction coefficient (Pa s/m)
 eps_p = 1.0e-13                    # penalty method parameter for unilateral condition
 eps_v = 1.0e-15                    # flow law regularization parameter
 
-sigma_0 = 1e3                      # minimum separation stress (default 1 kPa):
+sigma_0 = 1e3                      # minimum separation stress:
                                    # water pressure must exceed the normal stress
                                    # by this amount for ice-bed separation to occur
                                    # (has a regularizing effect that leads to better convergence)
@@ -49,8 +51,9 @@ tol = 1.0e-1                       # numerical tolerance for boundary geometry:
 Hght = 1000.0                      # (initial) height of the domain (m)
 Lngth = 80*1000.0                  # length of the domain (m)
 
-Ny = int(Lngth/2500.0)             # number of elements in vertical direction
-Nx = int(Lngth/2500.0)             # number of elements in horizontal direction
+
+Ny = int(Lngth/500.0)             # number of elements in vertical direction
+Nx = int(Lngth/500.0)             # number of elements in horizontal direction
 Nz = int(Hght/500.0)
 
 DX = Lngth/Nx
@@ -59,14 +62,14 @@ DZ = Hght/Nz
 
 # time-stepping parameters
 t_period = 5*3.154e7                     # oscillation period (sec)
-t_final = 1.0*t_period                     # final time
-nt_per_cycle = 2000                      # number of timesteps per oscillation
+t_final = 1.5*t_period                     # final time
+nt_per_cycle = 1000                      # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle)  # number of time steps
 dt = t_final/nt                          # timestep size
 t_arr = np.linspace(0,t_final,nt)        # time array (mainly for plotting)
 
 # spatial coordinates for plotting and interpolation on fine grid
-nx = 100*Nx                        # number of grid points for plotting
+nx = 10*Nx                        # number of grid points for plotting
                                    # (larger than true number of elements Nx)
 ny = nx
 
