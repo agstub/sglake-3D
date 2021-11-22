@@ -47,7 +47,7 @@ if dim != '2D':
 else:
     p0 = Point((0.0,0.0))
     p1 = Point((Lngth,Hght))
-    mesh = RectangleMesh(p0,p1, Nx, Nz)
+    mesh = RectangleMesh(p0,p1, Nx, Nz,diagonal='crossed')
     M = mesh.coordinates()
     # make sure all vertices are bounded below by the bed elevation
     M[:,1][M[:,1]<bed_2D(M[:,0])] = bed_2D(M[:,0])[M[:,1]<bed_2D(M[:,0])]

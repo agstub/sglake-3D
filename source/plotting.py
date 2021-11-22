@@ -75,39 +75,63 @@ def plot_fields(h_i,s_i,wb_i,xh,yh,xs,ys,i):
 def plot_2D(h_i,s_i,wb_i,xh,xs,i):
     if os.path.isdir('results/pngs')==False:
         os.mkdir('results/pngs')    # make a directory for the results.
+    if os.path.isdir('results/arrays')==False:
+        os.mkdir('results/arrays')    # make a directory for the results.
 
     h_int = interp1d(xh,h_i,kind='linear',fill_value='extrapolate',bounds_error=False)
     s_int = interp1d(xs,s_i,kind='linear',fill_value='extrapolate',bounds_error=False)
-    #wb_int = LinearNDInterpolator(list(zip(xs)),wb_i)
+    wb_int = interp1d(xs,wb_i,kind='linear',fill_value='extrapolate',bounds_error=False)
 
     X = X_fine
-    Gamma_h = h_int(X)
-    Gamma_s = s_int(X)
+    X_plt = X/1000-0.5*Lngth/1000
 
-    plt.figure(figsize=(8,6))
+    dh = h_int(X)-Hght                      # elevation anaomaly
+    ds = s_int(X) - bed_2D(X)               # water layer thickness
+    wb = wb_int(X)                  # basal vertical velocity
+
+    print('max |dh| = '+str(np.max(np.abs(dh))))
+    print('max |ds| = '+str(np.max(np.abs(ds))))
+    print('max |wb| = '+str(np.max(np.abs(wb))))
+
+
+    np.savetxt('results/arrays/dh_'+str(i),dh)
+    np.savetxt('results/arrays/ds_'+str(i),ds)
+    np.savetxt('results/arrays/wb_'+str(i),wb)
+
+
+    plt.figure(figsize=(8,10))
+    plt.subplot(311)
     plt.title(r'$t=$'+"{:.2f}".format(t_arr[i]/3.154e7)+' yr',loc='left',fontsize=22)
 
     # Plot upper surface
-    plt.plot(X/1000-0.5*Lngth/1000,Gamma_h[:]-0.98*Hght,color='royalblue',linewidth=1)
+    plt.plot(X_plt,dh,color='royalblue',linewidth=3)
+    plt.ylabel(r'elevation anomaly (m)',fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.ylim(-2,1)
+    plt.gca().xaxis.set_ticklabels([])
+    plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
 
-    # Plot ice, water, and bed domains; colored accordingly.
-    p1 = plt.fill_between(X/1000-0.5*Lngth/1000,y1=Gamma_s[:], y2=Gamma_h[:]-0.98*Hght,facecolor='aliceblue',alpha=1.0)
-    p2 = plt.fill_between(X/1000-0.5*Lngth/1000,bed_2D(X),Gamma_s[:],facecolor='slateblue',alpha=0.5)
-    p3 = plt.fill_between(X/1000-0.5*Lngth/1000,-18*np.ones(np.size(X)),bed_2D(X),facecolor='burlywood',alpha=1.0)
 
-    # Plot bed surface
-    plt.plot(X/1000-0.5*Lngth/1000,bed_2D(X),color='k',linewidth=1)
+    plt.subplot(312)
+    plt.plot(X_plt,ds,color='royalblue',linewidth=3)
+    plt.ylabel(r'water layer thickness (m)',fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.gca().xaxis.set_ticklabels([])
+    plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
+    plt.ylim(-0.1,5)
 
-    # Plot ice-water surface
-    plt.plot(X[(Gamma_s[:]-bed_2D(X)>tol)]/1000-0.5*Lngth/1000,Gamma_s[:][(Gamma_s[:]-bed_2D(X)>tol)],'o',color='crimson',markersize=1)
+
+    plt.subplot(313)
+    plt.plot(X_plt,wb,color='royalblue',linewidth=3)
+    plt.ylabel(r'basal vertical vel. (m/yr)',fontsize=16)
+    plt.ylim(-10,4)
+    plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
+
 
     # Label axes and save png:
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
-
-    plt.ylim(np.min(bed_2D(X))-2.0,25.0,8)
-    plt.xlim(-0.5*Lngth/1000,0.5*Lngth/1000)
     plt.tight_layout()
     plt.savefig('results/pngs/surfs_'+str(i))
     plt.close()

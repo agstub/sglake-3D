@@ -121,8 +121,6 @@ def apply_bcs(W,boundary_markers):
         bc4 = DirichletBC(W.sub(0).sub(2), Constant(0), boundary_markers,6)
         bcs = [bc1,bc2,bc3,bc4]
     else:
-        bc1 = DirichletBC(W.sub(0).sub(1), Constant(0), boundary_markers,1)
-        bc2 = DirichletBC(W.sub(0).sub(1), Constant(0), boundary_markers,2)
-        bcs = [bc1,bc2]
+        bcs = []
 
     return bcs

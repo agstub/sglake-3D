@@ -6,6 +6,11 @@ from geometry import bed,s_mean0,lake_vol_0
 from hydrology import Vdot
 import numpy as np
 from dolfin import *
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.size
 
 def Pi(u,nu):
         # penalty functional for enforcing the impenetrability constraint on the ice-bed boundary.
@@ -42,7 +47,9 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_cryo,ds,nu,T,lake_vol_0,t):
          + qw*(inner(u,nu)+Constant(Vdot(lake_vol_0,t))/L0)*ds(3)\
          + Constant(1/eps_p)*dPi(u,nu)*dot(v,nu)*ds(3)\
          + Constant(C)*inner(dot(T,u),dot(T,v))*ds(3) \
-         + g_cryo*inner(nu,v)*ds(2) + g_cryo*inner(nu,v)*ds(1)
+         + g_cryo*inner(nu,v)*ds(2) + g_cryo*inner(nu,v)*ds(1)\
+         - inner( dot(T, dot(sigma(u,p),nu)),dot(T,v) )*ds(1) - inner( dot(T, dot(sigma(u,p),nu)),dot(T,v) )*ds(2)
+
     if dim != '2D':
         Fw += g_cryo*inner(nu,v)*ds(5) + g_cryo*inner(nu,v)*ds(6)
     return Fw
@@ -61,11 +68,24 @@ def stokes_solve(mesh,t):
         else:
             element = MixedElement([[P2,P2],P1,R])
         W = FunctionSpace(mesh,element)
+        V = FunctionSpace(mesh,'CG',1)
 
         #---------------------define variational problem------------------------
         w = Function(W)
         (u,p,pw) = split(w)             # (velocity,pressure,mean water pressure)
         (v,q,qw) = TestFunctions(W)     # test functions corresponding to (u,p,pw)
+
+        M = mesh.coordinates()
+
+        M = comm.gather(M,root=0)
+
+        if rank == 0:
+            M = np.concatenate(M)
+            h0 = np.max(M[:,1][np.abs(M[:,0])<tol])
+        else:
+            h0 = None
+
+        h0 = comm.bcast(h0, root=0)
 
         # Gravitational body force
         if dim != '2D':
@@ -98,7 +118,7 @@ def stokes_solve(mesh,t):
             g_cryo = Expression('rho_i*g*(Hght-x[2])',rho_i=rho_i,g=g,Hght=Hght,degree=1)
         else:
             g_lake = Expression('rho_w*g*(s_mean-x[1])',rho_w=rho_w,g=g,s_mean=s_mean,degree=1)
-            g_cryo = Expression('rho_i*g*(Hght-x[1])',rho_i=rho_i,g=g,Hght=Hght,degree=1)
+            g_cryo = Expression('rho_i*g*(Hght-x[1])',rho_i=rho_i,g=g,Hght=h0,degree=1)
 
         #Apply Dirichlet BC on side walls
         bcs =  apply_bcs(W,boundary_markers)
@@ -110,6 +130,13 @@ def stokes_solve(mesh,t):
         solve(Fw == 0, w, bcs=bcs,
         solver_parameters={"newton_solver":{"relative_tolerance": 1e-14,"linear_solver":"mumps","maximum_iterations":50}},
         form_compiler_parameters={"quadrature_degree":quad_degree,"optimize":True,"eliminate_zeros":False})
+
+        # eta_fcn = project(eta(w.sub(0)),V)
+        # eta_vv = eta_fcn.compute_vertex_values(mesh)
+        # eta_mean = np.mean(eta_vv)
+        #
+        # if rank == 0:
+        #     print('mean viscosity = '+"{:.2E}".format(eta_mean))
 
         # return solution w
         return w
