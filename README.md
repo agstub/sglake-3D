@@ -1,6 +1,6 @@
 sglake-parallel
 
-Author: Aaron Stubblefield (Columbia University, LDEO).
+Authors: Aaron Stubblefield (Columbia University) with help/advising from Marc Spiegelman (Columbia University).
 
 # Overview
 This repository contains FEniCS python code for simulating subglacial lake shoreline
