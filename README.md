@@ -1,13 +1,13 @@
-sglake-3D
+sglake-parallel
 
 Author: Aaron Stubblefield (Columbia University, LDEO).
 
 # Overview
 This repository contains FEniCS python code for simulating subglacial lake shoreline
-migration and free-surface evolution over time in three spatial dimensions. The model is
+migration and free-surface evolution over time in two or three spatial dimensions. The model is
 isothermal Stokes flow with nonlinear ("Glen's law") viscosity. The contact
 conditions that determine whether ice remains in contact with the bed or
-detaches are enforced with a penalty functional.
+detaches are enforced with a penalty functional. The model runs in parallel with mpi4py (see below).
 
 # Dependencies
 ## Required dependencies
