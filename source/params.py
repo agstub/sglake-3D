@@ -52,9 +52,9 @@ Hght = 1000.0                      # (initial) height of the domain (m)
 Lngth = 80*1000.0                  # length of the domain (m)
 
 
-Ny = int(Lngth/100.0)             # number of elements in vertical direction
-Nx = int(Lngth/100.0)             # number of elements in horizontal direction
-Nz = int(Hght/100.0)
+Ny = int(Lngth/200.0)             # number of elements in vertical direction
+Nx = int(Lngth/200.0)             # number of elements in horizontal direction
+Nz = int(Hght/200.0)
 
 DX = Lngth/Nx
 DY = Lngth/Ny
@@ -69,7 +69,7 @@ dt = t_final/nt                          # timestep size
 t_arr = np.linspace(0,t_final,nt)        # time array (mainly for plotting)
 
 # spatial coordinates for plotting and interpolation on fine grid
-nx = 100                           # number of grid points for plotting
+nx = 101                           # number of grid points for plotting
                                    # (larger than true number of elements Nx)
 ny = nx
 

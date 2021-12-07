@@ -1,6 +1,6 @@
 import numpy as np
 from dolfin import *
-from params import dim
+from params import dim,nt
 from mpi4py import MPI
 from plotting import plot_fields
 from mesh_fcns import get_fields

@@ -39,7 +39,12 @@ def Vdot(lake_vol_0,t):
 
 #-------------------------------------------------------------------------------
 # #sanity check plotting
-# import matplotlib.pyplot as plt
-# t = np.linspace(0,t_final,nt)
-# plt.plot(Vol(t,1))
-# plt.show()
+import matplotlib.pyplot as plt
+ind = np.arange(0,4000,20)
+t = np.linspace(0,t_final,nt)
+plt.plot(t/3.154e7,Vol(t,1),linewidth=3,color='royalblue')
+plt.plot(t[ind]/3.154e7,Vol(t,1)[ind],'ko',markersize=8)
+plt.plot(t[ind][47]/3.154e7,Vol(t,1)[ind][47],'ro',markersize=16)
+plt.plot(t[ind][100]/3.154e7,Vol(t,1)[ind][100],'ro',markersize=16)
+plt.plot(t[ind][113]/3.154e7,Vol(t,1)[ind][113],'ro',markersize=16)
+plt.show()
