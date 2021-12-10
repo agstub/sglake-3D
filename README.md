@@ -9,6 +9,9 @@ isothermal Stokes flow with nonlinear ("Glen's law") viscosity. The contact
 conditions that determine whether ice remains in contact with the bed or
 detaches are enforced with a penalty functional. The model runs in parallel with mpi4py (see below).
 
+This is used to create synthetic data for the subglacial inversions in
+the repository https://github.com/agstub/subglacial-inversion.
+
 # Dependencies
 ## Required dependencies
 As of this commit, this code runs with the latest FEniCS Docker image (https://fenicsproject.org/download/).
@@ -19,7 +22,7 @@ Docker may be obtained at: https://www.docker.com/. To run the Docker image:
 
 ## Optional dependencies
 
-1. FFmpeg (https://www.ffmpeg.org/) can be used, along with **make_movie.py**,
+1. FFmpeg (https://www.ffmpeg.org/) can be used, along with **process.py**,
 to create a video of the evolving free surface geometry over time. See description below.
 
 2. ParaView is useful for visualizing velocity/pressure solutions to the Stokes equations (https://www.paraview.org/).
@@ -27,7 +30,7 @@ to create a video of the evolving free surface geometry over time. See descripti
 # Contents
 
 ## 1. Source files
-The model is organized in 7 python files in the *source* directory as follows.
+The model is organized in a series of python files in the *source* directory as follows.
 
 1. **geometry.py** contains the geometric description of the bed and initial ice-water interface.
 
@@ -45,8 +48,9 @@ timeseries.
 7. **main.py** runs the model. It contains the time-stepping loop that
 calls the Stokes solver and mesh-related functions at each timestep, and saves the output.
 
-8. **post_process.py** extracts elevation and basal vertical velocity fields
-from the FEniCS velocity solution and mesh.
+8. **post_process.py** and **realtime_process.py** extract elevation and basal vertical velocity fields
+from the FEniCS velocity solution and mesh. The only difference is that **realtime_process.py**
+does this while the simulation is running, rather than afterwards.
 
 9. **plotting.py** creates png images of the elevation anomaly, basal water thickness,
 and basal vertical velocity at each time step. This is called by
@@ -77,7 +81,14 @@ Model output is saved in a *results* directory. This includes
 2. hdf5 files (*results/h5files* subdirectory) that are used in **post_process.py** to
 plot quantities of interest.
 
-
+# Creating synthetic data for inversions
+After the code has run to completion in the default configuration,
+just run `python3 ./scripts/process.py` to create numpy arrays
+`h_true.npy` and `wb_true.npy`, along with a figure of the solution at
+a few time steps (fig8.png) and a collection of png's of the solution
+at every time step (saved in a directory called *movie*).
+These numpy arrays are then used as example synthetic data in the subglacial inversion repository
+https://github.com/agstub/subglacial-inversion.
 
 # Model options
 Model options and parameters are set in the **params.py** file.
