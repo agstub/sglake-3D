@@ -23,7 +23,7 @@ Docker may be obtained at: https://www.docker.com/. To run the Docker image:
 ## Optional dependencies
 
 1. FFmpeg (https://www.ffmpeg.org/) can be used, along with **process.py**,
-to create a video of the evolving free surface geometry over time. See description below.
+to create a video of the evolving free surface geometry over time. 
 
 2. ParaView is useful for visualizing velocity/pressure solutions to the Stokes equations (https://www.paraview.org/).
 
@@ -65,9 +65,6 @@ To run the code:
 
 2. In Docker, run the main file from the parent directory: `python3 ./source/main.py`
 
-The solution can be visualized with paraview (open *results/vtkfiles* subdirectory)
-or by running  `python3 ./source/post_process.py`.
-
 The code can be run in parallel
 via `mpirun -np num_proc python3 ./source/main.py` where `num_proc` is the
 number of processes.
@@ -76,7 +73,7 @@ number of processes.
 
 Model output is saved in a *results* directory. This includes
 
-1. the Stokes solution vtk files (*results/vtkfiles* subdirectory),
+1. the Stokes solution vtk files (*results/vtkfiles* subdirectory) (if turned on in params.py),
 
 2. hdf5 files (*results/h5files* subdirectory) that are used in **post_process.py** to
 plot quantities of interest.
