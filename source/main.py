@@ -13,7 +13,7 @@ from geometry import bed,bed_2D
 from mesh_fcns import move_mesh
 from boundary_conds import mark_boundary
 from params import tol,Lngth,Hght,nt,dt,Nx,Ny,Nz,save_vtk,plot_now,dim
-from realtime_process import realtime_plot
+from realtime_process import realtime_proc
 from mpi4py import MPI
 #-------------------------------------------------------------------------------
 
@@ -76,9 +76,8 @@ for i in range(nt):
     hdf5.close()
 
 
-    # plot in real time if desired
-    if plot_now == 'on':
-        realtime_plot(w,mesh,i)
+    # process results
+    realtime_proc(w,mesh,i)
 
     # move the mesh according by solving the surface kinematic equations
     # and displacemnt the interior mesh vertices smoothly

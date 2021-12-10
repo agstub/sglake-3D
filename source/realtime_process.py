@@ -2,14 +2,14 @@ import numpy as np
 from dolfin import *
 from params import dim
 from mpi4py import MPI
-from plotting import plot_fields
+from plotting import save_and_plot
 from mesh_fcns import get_fields
 import sys
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
-def realtime_plot(w,mesh,i):
+def realtime_proc(w,mesh,i):
     if dim != '2D':
         h,s,wb,xh,yh,xs,ys = get_fields(w,mesh)
     else:
@@ -39,8 +39,8 @@ def realtime_plot(w,mesh,i):
         if dim != '2D':
             yh = np.concatenate(yh).ravel()
             ys = np.concatenate(ys).ravel()
-            plot_fields(h,s,wb,xh,yh,xs,ys,i)
+            save_and_plot(h,s,wb,xh,yh,xs,ys,i)
             sys.stdout.flush()
         else:
-            plot_fields(h,s,wb,xh,0*xh,xs,0*xs,i)
+            save_and_plot(h,s,wb,xh,0*xh,xs,0*xs,i)
             sys.stdout.flush()

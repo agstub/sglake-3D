@@ -5,7 +5,7 @@ from mpi4py import MPI
 from plotting import plot_fields
 from mesh_fcns import get_fields
 import sys
-from realtime_process import realtime_plot
+from realtime_process import realtime_proc
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -28,4 +28,4 @@ for i in range(nt):
     w = Function(W)
     hdf5.read(w, "solution")
 
-    realtime_plot(w,mesh,i)
+    realtime_proc(w,mesh,i)

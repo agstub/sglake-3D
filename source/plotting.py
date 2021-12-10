@@ -1,4 +1,4 @@
-from params import Lngth,tol,Hght,nt,X0,Y0,t_arr,dim,X_fine
+from params import Lngth,tol,Hght,nt,X0,Y0,t_arr,dim,X_fine,plot_now
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.interpolate import LinearNDInterpolator, interp1d
@@ -7,9 +7,9 @@ import numpy as np
 import copy
 from geometry import bed,bed_2D
 
-def plot_fields(h_i,s_i,wb_i,xh,yh,xs,ys,i):
+def save_and_plot(h_i,s_i,wb_i,xh,yh,xs,ys,i):
     if dim == '2D':
-        plot_2D(h_i,s_i,wb_i,xh,xs,i)
+        save_2D(h_i,s_i,wb_i,xh,xs,i)
     else:
         if os.path.isdir('results/pngs')==False:
             os.mkdir('results/pngs')    # make a directory for the results.
@@ -72,7 +72,7 @@ def plot_fields(h_i,s_i,wb_i,xh,yh,xs,ys,i):
 
 
 
-def plot_2D(h_i,s_i,wb_i,xh,xs,i):
+def save_2D(h_i,s_i,wb_i,xh,xs,i):
     if os.path.isdir('results/pngs')==False:
         os.mkdir('results/pngs')    # make a directory for the results.
     if os.path.isdir('results/arrays')==False:
@@ -98,40 +98,40 @@ def plot_2D(h_i,s_i,wb_i,xh,xs,i):
     np.savetxt('results/arrays/ds_'+str(i),ds)
     np.savetxt('results/arrays/wb_'+str(i),wb)
 
+    if plot_now == 'on':
+        plt.figure(figsize=(8,10))
+        plt.subplot(311)
+        plt.title(r'$t=$'+"{:.2f}".format(t_arr[i]/3.154e7)+' yr',loc='left',fontsize=22)
 
-    plt.figure(figsize=(8,10))
-    plt.subplot(311)
-    plt.title(r'$t=$'+"{:.2f}".format(t_arr[i]/3.154e7)+' yr',loc='left',fontsize=22)
-
-    # Plot upper surface
-    plt.plot(X_plt,dh,color='royalblue',linewidth=3)
-    plt.ylabel(r'elevation anomaly (m)',fontsize=16)
-    plt.yticks(fontsize=16)
-    plt.ylim(-2,1)
-    plt.gca().xaxis.set_ticklabels([])
-    plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
-
-
-    plt.subplot(312)
-    plt.plot(X_plt,ds,color='royalblue',linewidth=3)
-    plt.ylabel(r'water layer thickness (m)',fontsize=16)
-    plt.yticks(fontsize=16)
-    plt.gca().xaxis.set_ticklabels([])
-    plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
-    plt.ylim(-0.1,5)
+        # Plot upper surface
+        plt.plot(X_plt,dh,color='royalblue',linewidth=3)
+        plt.ylabel(r'elevation anomaly (m)',fontsize=16)
+        plt.yticks(fontsize=16)
+        plt.ylim(-2,1)
+        plt.gca().xaxis.set_ticklabels([])
+        plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
 
 
-    plt.subplot(313)
-    plt.plot(X_plt,wb,color='royalblue',linewidth=3)
-    plt.ylabel(r'basal vertical vel. (m/yr)',fontsize=16)
-    plt.ylim(-10,4)
-    plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
+        plt.subplot(312)
+        plt.plot(X_plt,ds,color='royalblue',linewidth=3)
+        plt.ylabel(r'water layer thickness (m)',fontsize=16)
+        plt.yticks(fontsize=16)
+        plt.gca().xaxis.set_ticklabels([])
+        plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
+        plt.ylim(-0.1,5)
 
 
-    # Label axes and save png:
-    plt.xlabel(r'$x$ (km)',fontsize=20)
-    plt.xticks(fontsize=16)
-    plt.yticks(fontsize=16)
-    plt.tight_layout()
-    plt.savefig('results/pngs/surfs_'+str(i))
-    plt.close()
+        plt.subplot(313)
+        plt.plot(X_plt,wb,color='royalblue',linewidth=3)
+        plt.ylabel(r'basal vertical vel. (m/yr)',fontsize=16)
+        plt.ylim(-10,4)
+        plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
+
+
+        # Label axes and save png:
+        plt.xlabel(r'$x$ (km)',fontsize=20)
+        plt.xticks(fontsize=16)
+        plt.yticks(fontsize=16)
+        plt.tight_layout()
+        plt.savefig('results/pngs/surfs_'+str(i))
+        plt.close()
