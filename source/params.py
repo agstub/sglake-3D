@@ -9,7 +9,7 @@ save_vtk = 'off'
 
 
 # real-time plotting
-plot_now = 'on'
+plot_now = 'off'
 
 dim = '2D'
 
@@ -72,7 +72,6 @@ t_arr = np.linspace(0,t_final,nt)        # time array (mainly for plotting)
 nx = 101                           # number of grid points for plotting
                                    # (larger than true number of elements Nx)
 ny = nx
-
 
 X_fine = np.linspace(0,Lngth,nx)   # horizontal x coordinate
 

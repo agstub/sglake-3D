@@ -1,14 +1,10 @@
 #1.-------------------------process solution------------------------------------
 import numpy as np
-from scipy.interpolate import interp1d
 
 ind = np.arange(0,4000,20)
 
 dh = np.zeros((200,101))
 wb = np.zeros((200,101))
-
-x_old = np.linspace(-40,40,100)
-x_new = np.linspace(-40,40,101)
 
 j = 0
 
@@ -18,12 +14,8 @@ for i in ind:
     wb_i = np.loadtxt('./results/arrays/wb_'+str(i))  # basal vertical velocity (units = m/yr)
     dh_i = np.loadtxt('./results/arrays/dh_'+str(i))  # elevation anomaly (units = m)
 
-    wb_int = interp1d(x_old,wb_i)
-    dh_int = interp1d(x_old,dh_i)
-
-
-    wb[j,:] = wb_int(x_new)
-    dh[j,:] = dh_int(x_new)
+    wb[j,:] = wb_i
+    dh[j,:] = dh_i
 
     j += 1
 
