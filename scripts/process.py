@@ -66,7 +66,7 @@ def Vol(t,lake_vol_0):
     return V
 
 t = np.linspace(0,t_final,nt)
-X = np.linspace(0,Lngth,100)
+X = np.linspace(0,Lngth,101)
 bed = bed_2D(X)
 dH = 10
 wb_true = wb_ext
