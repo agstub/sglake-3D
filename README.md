@@ -1,5 +1,7 @@
 sglake-parallel
 
+[![DOI](https://zenodo.org/badge/428685309.svg)](https://zenodo.org/badge/latestdoi/428685309)
+
 Authors: Aaron Stubblefield (Columbia University) with help/advising from Marc Spiegelman (Columbia University).
 
 # Overview
