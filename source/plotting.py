@@ -23,12 +23,6 @@ def save_and_plot(h_i,s_i,wb_i,xh,yh,xs,ys,i):
         s_int = LinearNDInterpolator(list(zip(xs, ys)),s_i)
         wb_int = LinearNDInterpolator(list(zip(xs, ys)),wb_i)
 
-        print(r'solution properties at t='+"{:.2f}".format(t_arr[i]/3.154e7)+' yr:')
-        print('max elevation anom. = '+str(np.max(np.abs(h_int(X0,Y0)-Hght)))+' m')
-        print('max water thick. = '+str(np.max(np.abs(s_int(X0,Y0)-bed(X0,Y0))))+' m')
-        print('max basal vertical vel. = '+str(np.max(np.abs(wb_int(X0,Y0))))+" m/yr")
-        print('\n')
-
         cmap1 = copy.copy(mpl.cm.get_cmap("Blues"))
         cmap1.set_under('burlywood')
 
@@ -88,11 +82,6 @@ def save_2D(h_i,s_i,wb_i,xh,xs,i):
     dh = h_int(X)-Hght                      # elevation anaomaly
     ds = s_int(X) - bed_2D(X)               # water layer thickness
     wb = wb_int(X)                  # basal vertical velocity
-
-    print('max |dh| = '+str(np.max(np.abs(dh))))
-    print('max |ds| = '+str(np.max(np.abs(ds))))
-    print('max |wb| = '+str(np.max(np.abs(wb))))
-
 
     np.savetxt('results/arrays/dh_'+str(i),dh)
     np.savetxt('results/arrays/ds_'+str(i),ds)
