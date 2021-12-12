@@ -9,7 +9,7 @@ isothermal Stokes flow with nonlinear ("Glen's law") viscosity. The contact
 conditions that determine whether ice remains in contact with the bed or
 detaches are enforced with a penalty functional. The model runs in parallel with mpi4py (see below).
 
-This is used to create synthetic data for the subglacial inversions in
+The default configuration is used to create synthetic data for the subglacial inversions in
 the repository https://github.com/agstub/subglacial-inversion.
 
 # Dependencies
